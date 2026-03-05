@@ -1,0 +1,37 @@
+# Template: bottleneck_connectivity
+# Trigger: betweenness > 0.3 oder Artikulationspunkt
+# Zweck: Alle verbundenen Entitäten eines Hubs abfragen
+# Konzept: {{ local_name }} ({{ uri }})
+# Kritikalität: {{ criticality_level }} (Score: {{ "%.3f"|format(criticality_score) }})
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?related ?relatedLabel ?relationshipType WHERE {
+    {
+        # Direkte Subklassen
+        ?related rdfs:subClassOf <{{ uri }}> .
+        BIND("subClassOf" AS ?relationshipType)
+    }
+    UNION
+    {
+        # Überklassen
+        <{{ uri }}> rdfs:subClassOf ?related .
+        BIND("superClassOf" AS ?relationshipType)
+    }
+    UNION
+    {
+        # Properties mit dieser Klasse als Domain
+        ?related rdfs:domain <{{ uri }}> .
+        BIND("domain" AS ?relationshipType)
+    }
+    UNION
+    {
+        # Properties mit dieser Klasse als Range
+        ?related rdfs:range <{{ uri }}> .
+        BIND("range" AS ?relationshipType)
+    }
+    OPTIONAL { ?related rdfs:label ?relatedLabel . FILTER(LANG(?relatedLabel) = 'en') }
+}
+ORDER BY ?relationshipType ?related

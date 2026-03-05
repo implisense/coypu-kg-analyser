@@ -1,0 +1,862 @@
+pdl_version: "1.1"
+scenario:
+  id: iran_attack_scenario
+  title: Kombinierter militärischer Angriff auf den Iran und internationale Sanktionen
+  description: Kombinierter militärischer Angriff auf den Iran und internationale Sanktionen führt zur Sperrung der Straße von Hormuz (21% globaler Öltransit), Ölpreisschock (+80%), Störung iranischer Kupfer- und Petrochemikalienexporte. Deutschland und EU sind über direkte Importabhängigkeiten, indirekte Energiepreiswirkungen und Logistikunterbrechungen betroffen. Kaskadenwirkungen auf Chemie- und Automobilindustrie über 90-180 Tage.
+  name: Militärischer Angriff und Sanktionen gegen Iran
+  sector: energy
+  criticality: high
+entities:
+  - id: iran_oil_fields
+    type: infrastructure
+    name: Iranische Ölfelder
+    sector: energy
+    vulnerability: 0.8
+    stages:
+      - nioc
+    dependencies:
+      - persian_gulf_region
+  - id: kharg_island
+    type: infrastructure
+    name: Kharg Insel
+    sector: energy
+    vulnerability: 0.9
+    stages:
+      - nioc
+    dependencies:
+      - persian_gulf_region
+  - id: strait_of_hormuz
+    type: infrastructure
+    name: Straße von Hormuz
+    sector: transport
+    vulnerability: 0.85
+    stages:
+      - persian_gulf_region
+    dependencies:
+      - global_oil_market
+  - id: nioc
+    type: manufacturer
+    name: National Iranian Oil Company (NIOC)
+    sector: energy
+    dependencies:
+      - iran_oil_fields
+      - kharg_island
+    stages:
+      - global_oil_market
+  - id: persian_gulf_region
+    type: region
+    name: Persischer Golf Region
+    sector: geopolitical
+    dependencies:
+      - middle_east_region
+    stages:
+      - strait_of_hormuz
+  - id: cape_good_hope_route
+    type: infrastructure
+    name: Kap der Guten Hoffnung Route
+    sector: transport
+    substitution_potential: 0.7
+    substitution_type: route
+    substitution_direction: supply
+    dependencies:
+      - red_sea_route
+  - id: german_chemical_industry
+    type: manufacturer
+    name: Deutsche Chemische Industrie
+    sector: chemical
+    dependencies:
+      - eu_refineries
+      - eu_energy_market
+    stages:
+      - eu_refineries
+  - id: eu_refineries
+    type: manufacturer
+    name: EU Raffinerien
+    sector: energy
+    dependencies:
+      - global_oil_market
+      - strait_of_hormuz
+    stages:
+      - eu_energy_market
+  - id: attack_vector_cyberangriff_auf_betriebs_it
+    type: service
+    name: "Angriffsvektor: Cyberangriff auf Betriebs-IT"
+    sector: cross-sector
+    location: global
+    vulnerability: 0.7
+    substitution_potential: 0.2
+    attack_vector: true
+    stages:
+      - eu_lng_terminals
+    dependencies:
+      - nioc
+  - id: attack_vector_logistische_blockade_oder_transportausfa
+    type: service
+    name: "Angriffsvektor: Logistische Blockade oder Transportausfall"
+    sector: cross-sector
+    location: global
+    vulnerability: 0.7
+    substitution_potential: 0.2
+    attack_vector: true
+    stages:
+      - red_sea_route
+    dependencies:
+      - strait_of_hormuz
+  - id: iran_copper_mines
+    type: manufacturer
+    name: Iranische Kupferminen
+    sector: mining
+    vulnerability: 0.7
+    dependencies:
+      - persian_gulf_region
+    stages:
+      - eu_metal_industry
+  - id: eu_lng_terminals
+    type: infrastructure
+    name: EU LNG-Terminals
+    sector: energy
+    vulnerability: 0.4
+    dependencies:
+      - us_lng_suppliers
+  - id: eu_energy_market
+    type: commodity
+    name: EU-Energiemarkt
+    sector: energy
+    dependencies:
+      - global_oil_market
+    stages:
+      - global_oil_market
+  - id: global_oil_market
+    type: commodity
+    name: Globaler Ölmarkt
+    sector: energy
+    stages:
+      - eu_energy_market
+    dependencies:
+      - nioc
+      - russia_energy_exports
+      - saudi_arabia_opec
+  - id: middle_east_region
+    type: region
+    name: Naher Osten Region
+    sector: geopolitical
+    stages:
+      - persian_gulf_region
+    dependencies: []
+  - id: german_auto_industry
+    type: manufacturer
+    name: Deutsche Automobilindustrie
+    sector: manufacturing
+    vulnerability: 0.5
+    dependencies:
+      - eu_energy_market
+      - eu_metal_industry
+  - id: saudi_arabia_opec
+    type: manufacturer
+    name: Saudi-Arabien und OPEC
+    sector: energy
+    stages:
+      - global_oil_market
+    dependencies:
+      - middle_east_region
+  - id: us_lng_suppliers
+    type: manufacturer
+    name: US LNG-Lieferanten
+    sector: energy
+    stages:
+      - eu_lng_terminals
+    dependencies: []
+  - id: red_sea_route
+    type: infrastructure
+    name: Rotes Meer Route
+    sector: transport
+    vulnerability: 0.6
+    stages:
+      - strait_of_hormuz
+    dependencies:
+      - middle_east_region
+  - id: eu_metal_industry
+    type: manufacturer
+    name: EU Metallverarbeitung
+    sector: manufacturing
+    vulnerability: 0.5
+    stages:
+      - german_auto_industry
+    dependencies:
+      - iran_copper_mines
+      - eu_energy_market
+  - id: china_oil_imports_iran
+    type: commodity
+    name: Chinesische Ölimporte aus Iran
+    sector: energy
+    stages:
+      - global_oil_market
+    dependencies:
+      - nioc
+      - strait_of_hormuz
+  - id: china_shadow_fleet
+    type: infrastructure
+    name: Chinesische Shadow Fleet (Sanktionsumgehung)
+    sector: transport
+    vulnerability: 0.5
+    stages:
+      - china_oil_imports_iran
+    dependencies:
+      - strait_of_hormuz
+  - id: russia_energy_exports
+    type: manufacturer
+    name: Russische Energieexporte
+    sector: energy
+    stages:
+      - global_oil_market
+    dependencies:
+      - middle_east_region
+  - id: russia_iran_military_cooperation
+    type: service
+    name: Russisch-Iranische Militärkooperation (Waffen/Drohnen)
+    sector: geopolitical
+    stages:
+      - iran_oil_fields
+    dependencies:
+      - middle_east_region
+  - id: un_security_council
+    type: service
+    name: UN-Sicherheitsrat (Russland+China Veto)
+    sector: geopolitical
+    stages:
+      - middle_east_region
+    dependencies:
+      - middle_east_region
+  - id: north_south_corridor
+    type: infrastructure
+    name: Nord-Süd-Korridor (Russland-Iran-Indien)
+    sector: transport
+    vulnerability: 0.6
+    stages:
+      - russia_energy_exports
+    dependencies:
+      - middle_east_region
+      - russia_energy_exports
+  - id: iran_airspace
+    type: infrastructure
+    name: Iranischer Luftraum (Europa-Asien-Korridor)
+    sector: aviation
+    vulnerability: 0.95
+    stages:
+      - dubai_airport_dxb
+    dependencies:
+      - persian_gulf_region
+  - id: dubai_airport_dxb
+    type: infrastructure
+    name: Dubai International Airport (DXB)
+    sector: aviation
+    vulnerability: 0.7
+    stages:
+      - eu_energy_market
+    dependencies:
+      - iran_airspace
+      - persian_gulf_region
+  - id: doha_airport_doh
+    type: infrastructure
+    name: Hamad International Airport Doha (DOH)
+    sector: aviation
+    vulnerability: 0.65
+    stages:
+      - global_oil_market
+    dependencies:
+      - persian_gulf_region
+  - id: abu_dhabi_airport_auh
+    type: infrastructure
+    name: Abu Dhabi International Airport (AUH)
+    sector: aviation
+    vulnerability: 0.6
+    stages:
+      - eu_energy_market
+    dependencies:
+      - persian_gulf_region
+  - id: gulf_aviation_hub
+    type: service
+    name: Golf-Luftfahrtdrehkreuz (DXB/DOH/AUH kombiniert)
+    sector: aviation
+    vulnerability: 0.7
+    stages:
+      - eu_energy_market
+      - global_oil_market
+    dependencies:
+      - dubai_airport_dxb
+      - doha_airport_doh
+      - abu_dhabi_airport_auh
+  - id: european_airlines_rerouting
+    type: service
+    name: Europäische Airlines Umrouting (Lufthansa/Air France/KLM)
+    sector: aviation
+    vulnerability: 0.5
+    stages:
+      - eu_energy_market
+    dependencies:
+      - iran_airspace
+      - gulf_aviation_hub
+  - id: aviation_cargo_routes
+    type: infrastructure
+    name: Luftfracht-Routen Europa-Asien via Golf
+    sector: aviation
+    vulnerability: 0.6
+    stages:
+      - eu_energy_market
+    dependencies:
+      - gulf_aviation_hub
+      - iran_airspace
+events:
+  - id: military_attack_iran
+    type: geopolitical
+    criticality: high
+    trigger:
+      target: iran_oil_fields
+    impacts:
+      iran_oil_fields: -40%
+      kharg_island: -50%
+      strait_of_hormuz: -100%
+    timeline:
+      at: 1d
+    name: Militärischer Erstangriff auf iranische Öl- und Gasinfrastruktur
+  - id: strait_of_hormuz_blockade
+    type: geopolitical
+    criticality: high
+    trigger:
+      target: strait_of_hormuz
+    causes:
+      - military_attack_iran
+    impacts:
+      global_oil_market: +80%
+      eu_refineries: -30%
+      german_chemical_industry: -25%
+    timeline:
+      at: 1d
+    name: Iran sperrt Straße von Hormuz — 21% des globalen Öltransits blockiert
+  - id: international_sanctions
+    type: regulatory
+    criticality: high
+    trigger:
+      target: nioc
+    causes:
+      - military_attack_iran
+    impacts:
+      nioc: -60%
+      iran_oil_fields: -30%
+    timeline:
+      at: 3d
+    name: Westliche Sanktionen gegen NIOC und iranische Ölexporte in Kraft
+  - id: attacks_on_tankers
+    type: geopolitical
+    criticality: medium
+    trigger:
+      target: persian_gulf_region
+    causes:
+      - military_attack_iran
+    impacts:
+      global_oil_market: +20%
+    timeline:
+      at: 2d
+    name: Iranische Marinekräfte und Drohnen greifen Tanker im Persischen Golf an
+  - id: logistics_reroute_cape_good_hope
+    type: market_shock
+    criticality: medium
+    trigger:
+      target: cape_good_hope_route
+    causes:
+      - strait_of_hormuz_blockade
+    impacts:
+      german_chemical_industry: -15%
+    timeline:
+      at: 2w
+    name: Frachter weichen auf Kap-der-Guten-Hoffnung-Route aus (+14 Tage Lieferzeit)
+  - id: military_strike_iran
+    type: geopolitical
+    criticality: critical
+    name: Militärischer Angriff auf Iran
+    timeline:
+      at: 1d
+    impacts:
+      iran_oil_fields: -80%
+      kharg_island: -90%
+    trigger:
+      target: iran_oil_fields
+  - id: international_sanctions_iran
+    type: regulatory
+    criticality: high
+    name: Internationale Sanktionen gegen Iran
+    timeline:
+      at: 2d
+    impacts:
+      nioc: -100%
+      iran_copper_mines: -80%
+    trigger:
+      target: iran_oil_fields
+  - id: hormuz_closure
+    type: infrastructure_failure
+    criticality: critical
+    name: Sperrung Straße von Hormuz
+    timeline:
+      at: 3d
+    impacts:
+      strait_of_hormuz: -95%
+    trigger:
+      target: iran_oil_fields
+  - id: tanker_attacks
+    type: geopolitical
+    criticality: high
+    name: Angriffe auf Tanker im Persischen Golf
+    timeline:
+      at: 4d
+    impacts:
+      red_sea_route: -60%
+    trigger:
+      target: iran_oil_fields
+  - id: iran_oil_export_collapse
+    type: market_shock
+    criticality: high
+    name: Zusammenbruch iranischer Ölexporte
+    timeline:
+      at: 7d
+    impacts:
+      global_oil_market: -6%
+    trigger:
+      target: iran_oil_fields
+  - id: global_oil_price_spike
+    type: market_shock
+    criticality: critical
+    name: Globaler Ölpreisschock +80%
+    timeline:
+      at: 10d
+    impacts:
+      eu_energy_market: +80%
+    trigger:
+      target: iran_oil_fields
+  - id: eu_energy_price_shock
+    type: market_shock
+    criticality: high
+    name: EU-Energiepreisschock +60%
+    timeline:
+      at: 21d
+    impacts:
+      german_chemical_industry: -20%
+      german_auto_industry: -15%
+    trigger:
+      target: iran_oil_fields
+  - id: shipping_rerouting
+    type: infrastructure_failure
+    criticality: medium
+    name: Shipping-Umrouting via Kap der Guten Hoffnung
+    timeline:
+      at: 14d
+    impacts:
+      eu_refineries: -10%
+    trigger:
+      target: iran_oil_fields
+  - id: eu_industrial_production_decline
+    type: market_shock
+    criticality: high
+    name: EU-Industrieproduktionsrückgang -15%
+    timeline:
+      at: 60d
+    impacts:
+      german_chemical_industry: -15%
+      german_auto_industry: -15%
+    trigger:
+      target: iran_oil_fields
+  - id: iran_cyber_attack
+    type: geopolitical
+    criticality: medium
+    name: Iranischer Cyber-Angriff auf EU-Infrastruktur
+    timeline:
+      at: 5d
+    impacts:
+      eu_lng_terminals: -20%
+    trigger:
+      target: iran_oil_fields
+  - id: china_continues_iran_oil_imports
+    type: geopolitical
+    criticality: high
+    name: China bezieht weiter iranisches Öl via Shadow Fleet
+    timeline:
+      at: 7d
+    impacts:
+      nioc: +15%
+      global_oil_market: -10%
+    trigger:
+      target: iran_oil_fields
+  - id: russia_china_un_veto
+    type: regulatory
+    criticality: high
+    name: Russland und China blockieren UN-Resolution via Veto
+    timeline:
+      at: 2d
+    impacts:
+      un_security_council: -100%
+      middle_east_region: -20%
+    trigger:
+      target: iran_oil_fields
+  - id: russia_oil_revenue_surge
+    type: market_shock
+    criticality: medium
+    name: Russische Ölexport-Mehreinnahmen durch Preisschock +60%
+    timeline:
+      at: 10d
+    impacts:
+      russia_energy_exports: +60%
+    trigger:
+      target: iran_oil_fields
+  - id: russia_weapons_supply_iran
+    type: geopolitical
+    criticality: high
+    name: Russland liefert Drohnen und Ersatzteile an Iran
+    timeline:
+      at: 14d
+    impacts:
+      iran_oil_fields: +10%
+      strait_of_hormuz: -5%
+    trigger:
+      target: iran_oil_fields
+  - id: north_south_corridor_disruption
+    type: infrastructure_failure
+    criticality: medium
+    name: Nord-Süd-Korridor durch Kriegslage gestört
+    timeline:
+      at: 30d
+    impacts:
+      north_south_corridor: -70%
+    trigger:
+      target: iran_oil_fields
+  - id: iran_airspace_closure
+    type: infrastructure_failure
+    criticality: critical
+    name: Iran sperrt Luftraum — 1.500 Europa-Asien-Flüge täglich umgeleitet
+    timeline:
+      at: 1d
+    impacts:
+      iran_airspace: -100%
+      european_airlines_rerouting: -30%
+    trigger:
+      target: iran_airspace
+  - id: gulf_airports_threat_alert
+    type: geopolitical
+    criticality: high
+    name: Iranische Raketen-/Drohnenbedrohung für DXB, DOH und AUH — Flugbetrieb eingeschränkt
+    timeline:
+      at: 3d
+    impacts:
+      dubai_airport_dxb: -40%
+      doha_airport_doh: -35%
+      abu_dhabi_airport_auh: -30%
+    trigger:
+      target: dubai_airport_dxb
+  - id: aviation_war_risk_premium
+    type: market_shock
+    criticality: medium
+    name: Kriegsrisikoprämien für Golf-Luftraum steigen um 400% — Airlines meiden Region
+    timeline:
+      at: 5d
+    impacts:
+      gulf_aviation_hub: -25%
+      european_airlines_rerouting: -20%
+    trigger:
+      target: iran_oil_fields
+  - id: cargo_flight_disruption
+    type: infrastructure_failure
+    criticality: high
+    name: "Luftfracht Europa-Asien: 48-72h Verzögerung durch Umrouting und Kapazitätsverlust"
+    timeline:
+      at: 7d
+    impacts:
+      aviation_cargo_routes: -50%
+      german_auto_industry: -8%
+    trigger:
+      target: iran_oil_fields
+  - id: airline_kerosene_cost_surge
+    type: market_shock
+    criticality: medium
+    name: Kerosinkosten +60% durch Ölpreisschock — Lufthansa/Ryanair kürzen Kapazität
+    timeline:
+      at: 14d
+    impacts:
+      european_airlines_rerouting: -15%
+      eu_energy_market: +5%
+    trigger:
+      target: iran_oil_fields
+substitutions:
+  - id: substitution_cape_good_hope_route
+    type: route
+    direction: supply
+    potential: 0.7
+    from: strait_of_hormuz
+    to: cape_good_hope_route
+    timeline:
+      at: 1w
+  - id: sub_saudi_uae_oil
+    type: supplier
+    direction: supply
+    from: nioc
+    to: saudi_arabia_opec
+    potential: 0.4
+    name: Saudi-Arabien UAE als Öllieferant-Ersatz
+    timeline:
+      at: 30d
+  - id: sub_us_lng
+    type: supplier
+    direction: supply
+    from: eu_lng_terminals
+    to: us_lng_suppliers
+    potential: 0.3
+    name: US-LNG als Gas-Ersatz
+    timeline:
+      at: 45d
+    cost_delta: 0.45
+  - id: sub_iea_reserves
+    type: buffer
+    direction: supply
+    from: global_oil_market
+    to: eu_energy_market
+    potential: 0.6
+    name: IEA Strategische Ölreserven Freigabe
+    timeline:
+      at: 7d
+    duration_max: 90d
+  - id: sub_russia_oil_eu_bypass
+    type: supplier
+    direction: supply
+    from: global_oil_market
+    to: russia_energy_exports
+    potential: 0.15
+    name: Russisches Öl als theoretische EU-Ergänzungsquelle (politisch hoch problematisch)
+    timeline:
+      at: 90d
+supply_chains:
+  - id: autogen_links
+    name: Automatisch erzeugte Entity-Verlinkung
+    dependencies:
+      - from: iran_oil_fields
+        to: kharg_island
+        type: input
+        criticality: medium
+      - from: nioc
+        to: iran_oil_fields
+        type: input
+        criticality: medium
+      - from: persian_gulf_region
+        to: iran_oil_fields
+        type: input
+        criticality: medium
+      - from: german_chemical_industry
+        to: iran_oil_fields
+        type: input
+        criticality: medium
+      - from: eu_refineries
+        to: iran_oil_fields
+        type: input
+        criticality: medium
+      - from: attack_vector_cyberangriff_auf_betriebs_it
+        to: iran_oil_fields
+        type: input
+        criticality: medium
+      - from: attack_vector_logistische_blockade_oder_transportausfa
+        to: iran_oil_fields
+        type: input
+        criticality: medium
+      - from: iran_copper_mines
+        to: iran_oil_fields
+        type: input
+        criticality: medium
+      - from: middle_east_region
+        to: iran_oil_fields
+        type: input
+        criticality: medium
+      - from: german_auto_industry
+        to: iran_oil_fields
+        type: input
+        criticality: medium
+      - from: red_sea_route
+        to: iran_oil_fields
+        type: input
+        criticality: medium
+      - from: eu_metal_industry
+        to: iran_oil_fields
+        type: input
+        criticality: medium
+      - from: china_oil_imports_iran
+        to: iran_oil_fields
+        type: input
+        criticality: medium
+      - from: china_shadow_fleet
+        to: iran_oil_fields
+        type: input
+        criticality: medium
+      - from: russia_iran_military_cooperation
+        to: iran_oil_fields
+        type: input
+        criticality: medium
+      - from: un_security_council
+        to: iran_oil_fields
+        type: input
+        criticality: medium
+      - from: north_south_corridor
+        to: iran_oil_fields
+        type: input
+        criticality: medium
+      - from: iran_airspace
+        to: iran_oil_fields
+        type: input
+        criticality: medium
+      - from: dubai_airport_dxb
+        to: iran_oil_fields
+        type: input
+        criticality: medium
+      - from: doha_airport_doh
+        to: iran_oil_fields
+        type: input
+        criticality: medium
+      - from: abu_dhabi_airport_auh
+        to: iran_oil_fields
+        type: input
+        criticality: medium
+      - from: gulf_aviation_hub
+        to: iran_oil_fields
+        type: input
+        criticality: medium
+      - from: european_airlines_rerouting
+        to: iran_oil_fields
+        type: input
+        criticality: medium
+      - from: aviation_cargo_routes
+        to: iran_oil_fields
+        type: input
+        criticality: medium
+cascades:
+  - id: energy_cascade
+    origin: military_strike_iran
+    probability: 0.9
+    name: Energie-Kaskade
+    timeline:
+      - at: 1d
+        event: military_strike_iran
+        affects:
+          - iran_oil_fields
+          - kharg_island
+      - at: 3d
+        event: hormuz_closure
+        affects:
+          - strait_of_hormuz
+      - at: 10d
+        event: global_oil_price_spike
+        affects:
+          - global_oil_market
+          - eu_energy_market
+      - at: 21d
+        event: eu_energy_price_shock
+        affects:
+          - eu_refineries
+          - german_chemical_industry
+      - at: 60d
+        event: eu_industrial_production_decline
+        affects:
+          - german_auto_industry
+          - german_chemical_industry
+          - eu_metal_industry
+  - id: logistics_cascade
+    origin: tanker_attacks
+    probability: 0.8
+    name: Logistik-Kaskade
+    timeline:
+      - at: 4d
+        event: tanker_attacks
+        affects:
+          - red_sea_route
+          - strait_of_hormuz
+      - at: 14d
+        event: shipping_rerouting
+        affects:
+          - cape_good_hope_route
+      - at: 21d
+        event: eu_energy_price_shock
+        affects:
+          - eu_refineries
+          - eu_metal_industry
+  - id: china_cascade
+    origin: china_continues_iran_oil_imports
+    probability: 0.75
+    name: China-Kaskade - Sanktionsuntergrabung durch Shadow Fleet
+    timeline:
+      - at: 7d
+        event: china_continues_iran_oil_imports
+        affects:
+          - china_shadow_fleet
+          - nioc
+      - at: 14d
+        event: china_continues_iran_oil_imports
+        affects:
+          - global_oil_market
+          - china_oil_imports_iran
+      - at: 30d
+        event: russia_china_un_veto
+        affects:
+          - un_security_council
+          - middle_east_region
+      - at: 60d
+        event: eu_industrial_production_decline
+        affects:
+          - german_chemical_industry
+          - eu_refineries
+  - id: russia_cascade
+    origin: russia_oil_revenue_surge
+    probability: 0.85
+    name: Russland-Kaskade - Konfliktprolongation durch Öleinnahmen und Waffenlieferungen
+    timeline:
+      - at: 10d
+        event: russia_oil_revenue_surge
+        affects:
+          - russia_energy_exports
+          - global_oil_market
+      - at: 14d
+        event: russia_weapons_supply_iran
+        affects:
+          - russia_iran_military_cooperation
+          - iran_oil_fields
+      - at: 30d
+        event: north_south_corridor_disruption
+        affects:
+          - north_south_corridor
+      - at: 90d
+        event: eu_industrial_production_decline
+        affects:
+          - german_auto_industry
+          - eu_metal_industry
+  - id: aviation_cascade
+    origin: iran_airspace_closure
+    probability: 0.9
+    name: Luftfahrt-Kaskade — Sperrung iranischer Luftraum bis EU-Lieferketten
+    timeline:
+      - at: 1d
+        event: iran_airspace_closure
+        affects:
+          - iran_airspace
+          - european_airlines_rerouting
+      - at: 3d
+        event: gulf_airports_threat_alert
+        affects:
+          - dubai_airport_dxb
+          - doha_airport_doh
+          - abu_dhabi_airport_auh
+      - at: 5d
+        event: aviation_war_risk_premium
+        affects:
+          - gulf_aviation_hub
+          - european_airlines_rerouting
+      - at: 7d
+        event: cargo_flight_disruption
+        affects:
+          - aviation_cargo_routes
+          - german_auto_industry
+      - at: 14d
+        event: airline_kerosene_cost_surge
+        affects:
+          - european_airlines_rerouting
+          - eu_energy_market

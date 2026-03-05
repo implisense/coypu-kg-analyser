@@ -1,0 +1,24 @@
+# Template: cascade_bridge
+# Trigger: cross_ontology_count > 1
+# Zweck: Cross-Domain-Kaskaden-Pfade aufdecken
+# Konzept: {{ local_name }} ({{ uri }})
+# Kritikalität: {{ criticality_level }}, Cross-Ontology-Hubs: {{ cross_ontology_count }}
+# Referenzierende Namespaces: {{ referencing_namespaces | join(', ') }}
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?sourceClass ?sourceLabel ?bridgeConcept ?bridgeLabel ?targetClass ?targetLabel WHERE {
+    # Klassen aus anderen Namespaces, die über diesen Hub verbunden sind
+    ?sourceClass rdfs:subClassOf <{{ uri }}> .
+    ?targetClass rdfs:subClassOf <{{ uri }}> .
+    FILTER(?sourceClass != ?targetClass)
+
+    OPTIONAL { ?sourceClass rdfs:label ?sourceLabel . FILTER(LANG(?sourceLabel) = 'en') }
+    OPTIONAL { ?targetClass rdfs:label ?targetLabel . FILTER(LANG(?targetLabel) = 'en') }
+
+    BIND(<{{ uri }}> AS ?bridgeConcept)
+    OPTIONAL { <{{ uri }}> rdfs:label ?bridgeLabel . FILTER(LANG(?bridgeLabel) = 'en') }
+}
+LIMIT 50

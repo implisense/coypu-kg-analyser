@@ -1,0 +1,23 @@
+# Template: scenario_enrichment
+# Trigger: Kritikalität CRITICAL oder HIGH
+# Zweck: Instanzen für PDL-Szenario-Anreicherung abrufen
+# Konzept: {{ local_name }} ({{ uri }})
+# Kritikalität: {{ criticality_level }} (Score: {{ "%.3f"|format(criticality_score) }})
+{% if relevant_pdl_scenarios %}# Relevante PDL-Szenarien: {{ relevant_pdl_scenarios | join(', ') }}{% endif %}
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?instance ?instanceLabel ?additionalType WHERE {
+    ?instance rdf:type <{{ uri }}> .
+    ?instance rdf:type owl:NamedIndividual .
+    OPTIONAL { ?instance rdfs:label ?instanceLabel . FILTER(LANG(?instanceLabel) = 'en') }
+    OPTIONAL {
+        ?instance rdf:type ?additionalType .
+        FILTER(?additionalType != <{{ uri }}>)
+        FILTER(?additionalType != owl:NamedIndividual)
+    }
+}
+ORDER BY ?instanceLabel
+LIMIT 100

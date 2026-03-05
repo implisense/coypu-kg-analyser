@@ -1,0 +1,14 @@
+# Template: concentration_instance_count
+# Trigger: individual_concentration > 0.5
+# Zweck: Monitoring ob Instanzen sich weiter konzentrieren
+# Konzept: {{ local_name }} ({{ uri }})
+# Kritikalität: {{ criticality_level }} (Score: {{ "%.3f"|format(criticality_score) }})
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT (COUNT(?instance) AS ?instanceCount) WHERE {
+    ?instance rdf:type <{{ uri }}> .
+    ?instance rdf:type owl:NamedIndividual .
+}

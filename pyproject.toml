@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "coypu-kg-analyser"
+version = "0.1.0"
+description = "Knowledge Graph criticality analysis for CoyPu ontologies"
+requires-python = ">=3.9"
+readme = "README.md"
+license = { text = "MIT" }
+keywords = ["knowledge-graph", "ontology", "rdf", "owl", "sparql", "criticality-analysis"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+
+[project.urls]
+Homepage = "https://github.com/implisense/coypu-kg-analyser"
+Repository = "https://github.com/implisense/coypu-kg-analyser"
+dependencies = [
+    "rdflib>=6.3.0",
+    "networkx>=3.1",
+    "jinja2>=3.1",
+    "pyyaml>=6.0",
+    "click>=8.1",
+    "rich>=13.0",
+    "requests>=2.26",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4", "pytest-cov>=4.1"]
+
+[project.scripts]
+coypu-kg-analyser = "coypu_kg_analyser.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["coypu_kg_analyser*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

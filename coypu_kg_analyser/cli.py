@@ -371,67 +371,6 @@ def parametrize_s1(
 
 
 
-@main.command("parametrize-s10")
-@click.option(
-    "--output",
-    default=None,
-    type=click.Path(path_type=Path),
-    help="Ausgabe-Pfad für shocks.json (stdout wenn nicht angegeben).",
-)
-@click.option(
-    "--lookback-days",
-    default=180,
-    show_default=True,
-    help="Zeitraum in Tagen für ACLED- und GTA-Abfragen.",
-)
-@click.option(
-    "--max-results",
-    default=2000,
-    show_default=True,
-    help="Maximale Anzahl Ergebnisse pro Query.",
-)
-@click.option(
-    "--reference-date",
-    default=None,
-    help="Referenzdatum (YYYY-MM-DD), Standard: heute.",
-)
-@click.option(
-    "--endpoint",
-    default="https://copper.coypu.org/coypu/",
-    show_default=True,
-    help="SPARQL-Endpoint URL.",
-)
-def parametrize_s10(
-    output: Path | None,
-    lookback_days: int,
-    max_results: int,
-    reference_date: str | None,
-    endpoint: str,
-) -> None:
-    """Übersetzt CoyPu KG-Daten (ACLED, GTA, WPI) in S10-Iran-Angriff-Schocks."""
-    from coypu_kg_analyser.live_query import LiveQueryClient
-    from coypu_kg_analyser.parametrizer.s10_iran import S10Parametrizer
-
-    client = LiveQueryClient(endpoint=endpoint)
-    parametrizer = S10Parametrizer(
-        client, lookback_days=lookback_days, reference_date=reference_date, max_results=max_results
-    )
-
-    err_console = Console(stderr=True)
-    err_console.print("Frage KG-Daten ab (ACLED, GTA, WPI)...")
-    result = parametrizer.build_shocks()
-    output_dict = result.to_output_dict(lookback_days=lookback_days)
-
-    text = json.dumps(output_dict, indent=2, ensure_ascii=False)
-
-    if output:
-        output.write_text(text, encoding="utf-8")
-        err_console.print(f"[bold green]Gespeichert:[/] {output}")
-    else:
-        sys.stdout.write(text + "\n")
-
-    err_console.print(f"\n[cyan]{result.summary}[/]")
-
 
 def _print_single_result(result: object, output_format: str, output_file: Path | None) -> None:
     from coypu_kg_analyser.live_query import QueryResult

@@ -198,32 +198,3 @@ def test_parametrize_s1_reference_date() -> None:
     assert data["scenario"] == "soy_feed_disruption"
 
 
-def test_parametrize_s10_stdout():
-    """parametrize-s10 gibt valides JSON auf stdout aus."""
-    from coypu_kg_analyser.parametrizer.s10_iran import S10ParametrizerResult
-    mock_result = S10ParametrizerResult(
-        shocks=[{"target_id": "strait_of_hormuz", "shock_type": "capacity", "magnitude": 0.7}],
-        acled_gulf_count=10,
-        acled_red_sea_count=3,
-        gta_oil_sanctions_count=4,
-        gta_copper_sanctions_count=0,
-        gta_oil_price_count=6,
-        port_capacities={"IRBND": 1.0, "NLRTM": 1.0, "AEJEA": 1.0},
-        summary="Test",
-        generated_at="2026-03-03T00:00:00",
-    )
-
-    with patch("coypu_kg_analyser.live_query.LiveQueryClient") as MockClient:
-        with patch("coypu_kg_analyser.parametrizer.s10_iran.S10Parametrizer") as MockParam:
-            mock_instance = MagicMock()
-            mock_instance.build_shocks.return_value = mock_result
-            MockParam.return_value = mock_instance
-
-            runner = CliRunner(mix_stderr=False)
-            result = runner.invoke(main, ["parametrize-s10"])
-
-    assert result.exit_code == 0
-    import json
-    data = json.loads(result.output)
-    assert data["scenario"] == "iran_attack_scenario"
-    assert len(data["shocks"]) == 1
